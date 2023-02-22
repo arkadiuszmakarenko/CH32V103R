@@ -9,38 +9,54 @@
  *******************************************************************************/
 
 /*
- *@Note
- 串口打印调试例程：
- USART1_Tx(PA9)。
- 本例程演示使用 USART1(PA9) 作打印调试口输出。
-
+ * @Note
+ * This example demonstrates the process of enumerating the keyboard and mouse
+ * by a USB host and obtaining data based on the polling time of the input endpoints
+ * of the keyboard and mouse.
+ * The USBFS port also supports enumeration of keyboard and mouse attached at tier
+ * level 2(Hub 1).
 */
 
-#include "debug.h"
+/*
+ * @Note
+ * The USBHD module uses the system clock as the clock source, so the SystemCoreClock can
+ * only be set to 72MHz or 48MHz.
+ */
 
-/* Global typedef */
-
-/* Global define */
-
-/* Global Variable */
+/*******************************************************************************/
+/* Header File */
+#include "usb_host_config.h"
+#include "utils.h"
 
 /*********************************************************************
  * @fn      main
  *
- * @brief   Main program.
+ * @brief   Main function.
  *
  * @return  none
  */
-int main(void)
+int main( void )
 {
-    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
-    Delay_Init();
-    USART_Printf_Init(115200);
-    printf("SystemClk:%d\r\n", SystemCoreClock);
+    /* Initialize system configuration */
+    Delay_Init( );
+    USART_Printf_Init( 115200 );
+    DUG_PRINTF( "SystemClk:%d\r\n", SystemCoreClock );
+    DUG_PRINTF( "USBHD HOST KM Test\r\n" );
 
-    printf("This is printf example\r\n");
+    /* Initialize timer for obtaining keyboard and mouse data at regular intervals */
+    TIM3_Init( 9, SystemCoreClock / 10000 - 1 );
+    DUG_PRINTF( "TIM3 Init OK!\r\n" );
 
-    while(1)
+    /* Configure USB clock and initialize USB host */
+#if DEF_USBHD_PORT_EN
+    USBHD_RCC_Init( );
+    USBHD_Host_Init( ENABLE );
+    memset( &RootHubDev.bStatus, 0, sizeof( ROOT_HUB_DEVICE ) );
+    memset( &HostCtl[ DEF_USBHD_PORT_INDEX * DEF_ONE_USB_SUP_DEV_TOTAL ].InterfaceNum, 0, DEF_ONE_USB_SUP_DEV_TOTAL * sizeof( HOST_CTL ) );
+#endif
+    
+    while( 1 )
     {
+        USBH_MainDeal( );
     }
 }
