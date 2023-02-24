@@ -127,46 +127,47 @@ typedef struct _ROOT_HUB_DEVICE
     HUB_DEVICE Device[ DEF_NEXT_HUB_PORT_NUM_MAX ];
 } ROOT_HUB_DEVICE, *PROOT_HUB_DEVICE;
 
+typedef struct interface
+{
+    uint8_t  Type;
+    uint16_t HidDescLen;
+    uint8_t  HidReportID;
+    uint8_t  Full_KB_Flag;
+
+    uint8_t  InEndpNum;
+    uint8_t  InEndpAddr[ 4 ];
+    uint8_t  InEndpType[ 4 ];
+    uint16_t InEndpSize[ 4 ];
+    uint8_t  InEndpTog[ 4 ];
+    uint8_t  InEndpInterval[ 4 ];
+    uint8_t  InEndpTimeCount[ 4 ];
+
+    uint8_t  OutEndpNum;
+    uint8_t  OutEndpAddr[ 4 ];
+    uint8_t  OutEndpType[ 4 ];
+    uint16_t OutEndpSize[ 4 ];
+    uint8_t  OutEndpTog[ 4 ];
+
+    uint8_t  IDFlag;
+    uint8_t  ReportID;
+
+    uint8_t  LED_Usage_Min;
+    uint8_t  LED_Usage_Max;
+
+    uint8_t  SetReport_Swi;
+    uint8_t  SetReport_Value;
+    uint8_t  SetReport_Flag;
+    hid_report_t HIDRptDesc;
+    FIFO_Utils_TypeDef buffer;
+    uint8_t	HidRptLen;
+} Interface;
+
 /* USB Host Control Structure */
 typedef struct __HOST_CTL
 {
     uint8_t  InterfaceNum;
     uint8_t  ErrorCount;
-
-    struct interface
-    {
-        uint8_t  Type;
-        uint16_t HidDescLen;
-        uint8_t  HidReportID;
-        uint8_t  Full_KB_Flag;
-
-        uint8_t  InEndpNum;
-        uint8_t  InEndpAddr[ 4 ];
-        uint8_t  InEndpType[ 4 ];
-        uint16_t InEndpSize[ 4 ];
-        uint8_t  InEndpTog[ 4 ];
-        uint8_t  InEndpInterval[ 4 ];
-        uint8_t  InEndpTimeCount[ 4 ];
-
-        uint8_t  OutEndpNum;
-        uint8_t  OutEndpAddr[ 4 ];
-        uint8_t  OutEndpType[ 4 ];
-        uint16_t OutEndpSize[ 4 ];
-        uint8_t  OutEndpTog[ 4 ];
-
-        uint8_t  IDFlag;
-        uint8_t  ReportID;
-
-        uint8_t  LED_Usage_Min;
-        uint8_t  LED_Usage_Max;
-
-        uint8_t  SetReport_Swi;
-        uint8_t  SetReport_Value;
-        uint8_t  SetReport_Flag;
-        hid_report_t HIDRptDesc;
-        FIFO_Utils_TypeDef buffer;
-        uint8_t	HidRptLen;
-    }Interface[ DEF_INTERFACE_NUM_MAX ];
+    Interface Interface[DEF_INTERFACE_NUM_MAX ];
 } HOST_CTL, *PHOST_CTL;
 
 /*******************************************************************************/

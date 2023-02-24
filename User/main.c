@@ -27,6 +27,10 @@
 /* Header File */
 #include "usb_host_config.h"
 #include "utils.h"
+#include "tim.h"
+#include "mouse.h"
+
+
 
 /*********************************************************************
  * @fn      main
@@ -39,9 +43,11 @@ int main( void )
 {
     /* Initialize system configuration */
     Delay_Init( );
+#if DEF_DEBUG_PRINTF
     USART_Printf_Init( 115200 );
     DUG_PRINTF( "SystemClk:%d\r\n", SystemCoreClock );
     DUG_PRINTF( "USBHD HOST KM Test\r\n" );
+#endif
 
     /* Initialize timer for obtaining keyboard and mouse data at regular intervals */
     TIM3_Init( 9, SystemCoreClock / 10000 - 1 );
@@ -55,8 +61,40 @@ int main( void )
     memset( &HostCtl[ DEF_USBHD_PORT_INDEX * DEF_ONE_USB_SUP_DEV_TOTAL ].InterfaceNum, 0, DEF_ONE_USB_SUP_DEV_TOTAL * sizeof( HOST_CTL ) );
 #endif
     
+    TIM2_Init( );
+    Delay_Init( );
+#if DEF_DEBUG_PRINTF
+    DUG_PRINTF( "TIM2 Init OK!\r\n" );
+#endif
+    TIM4_Init( );
+    Delay_Init( );
+#if DEF_DEBUG_PRINTF
+    DUG_PRINTF( "TIM4 Init OK!\r\n" );
+#endif
+
+
     while( 1 )
     {
         USBH_MainDeal( );
+
+        for (int itf = 0; itf<4 ; itf++)
+        {
+        	if (HostCtl[0].Interface[itf].Type == DEC_MOUSE)
+        	{
+        		HID_MOUSE_Info_TypeDef *mousedata = 	USBH_GetMouseInfo(&HostCtl[0].Interface[itf]);
+        		if (mousedata!=NULL)
+        		{
+        			DUG_PRINTF( "TIM4 Init OK!\r\n" );
+
+        		}
+        	}
+        }
+
+
+
+
+
+
     }
 }
+
