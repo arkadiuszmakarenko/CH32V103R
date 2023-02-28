@@ -7,7 +7,7 @@ void FifoInit(FIFO_Utils_TypeDef *f)
   f->head = 0U;
   f->tail = 0U;
   f->lock = 0U;
-  f->size = 255U;
+  f->size = 128U;
   f->buf = f->buffArr;
 }
 

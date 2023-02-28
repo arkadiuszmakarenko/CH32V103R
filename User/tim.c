@@ -70,23 +70,3 @@ void TIM4_Init( void )
 
 }
 
-
-void TIM2_IRQHandler( void )
-{
-
-    if( TIM_GetITStatus( TIM2, TIM_IT_Update ) != RESET )
-    {
-        /* Clear interrupt flag */
-        TIM_ClearITPendingBit( TIM2, TIM_IT_Update );
-    }
-}
-
-void TIM4_IRQHandler( void )
-{
-
-    if( TIM_GetITStatus( TIM4, TIM_IT_Update ) != RESET )
-    {
-        /* Clear interrupt flag */
-        TIM_ClearITPendingBit( TIM4, TIM_IT_Update );
-    }
-}

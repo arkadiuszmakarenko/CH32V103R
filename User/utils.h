@@ -24,7 +24,7 @@ typedef struct
   uint16_t tail;
   uint16_t size;
   uint8_t  lock;
-  uint8_t  buffArr[256];
+  uint8_t  buffArr[128];
 } FIFO_Utils_TypeDef;
 
 void FifoInit(FIFO_Utils_TypeDef *f);
