@@ -1,4 +1,5 @@
 #include "tim.h"
+#include "mouse.h"
 
 void TIM2_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void TIM4_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
@@ -57,7 +58,7 @@ void TIM4_Init( void )
     TIM_ITConfig( TIM4, TIM_IT_Update, ENABLE );
 
     NVIC_InitStructure.NVIC_IRQChannel = TIM4_IRQn;
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 4;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3;
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init( &NVIC_InitStructure );
@@ -70,3 +71,26 @@ void TIM4_Init( void )
 
 }
 
+
+
+void TIM2_IRQHandler( void )
+{
+
+    if( TIM_GetITStatus( TIM2, TIM_IT_Update ) != RESET )
+    {
+    	ProcessX_IRQ();
+        /* Clear interrupt flag */
+        TIM_ClearITPendingBit( TIM2, TIM_IT_Update );
+    }
+}
+
+void TIM4_IRQHandler( void )
+{
+
+    if( TIM_GetITStatus( TIM4, TIM_IT_Update ) != RESET )
+    {
+    	 ProcessY_IRQ();
+        /* Clear interrupt flag */
+        TIM_ClearITPendingBit( TIM4, TIM_IT_Update );
+    }
+}

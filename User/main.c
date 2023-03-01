@@ -73,9 +73,10 @@ int main(void) {
 	DUG_PRINTF("TIM2 Init OK!\r\n");
 #endif
 	TIM4_Init();
+	DUG_PRINTF("TIM4 Init OK!\r\n");
 	Delay_Init();
 #if DEF_DEBUG_PRINTF
-	DUG_PRINTF("TIM4 Init OK!\r\n");
+
 #endif
 	GPIO_Config();
 
@@ -166,25 +167,4 @@ int main(void) {
 
 
 
-void TIM2_IRQHandler( void )
-{
-
-    if( TIM_GetITStatus( TIM2, TIM_IT_Update ) != RESET )
-    {
-    	ProcessX_IRQ();
-        /* Clear interrupt flag */
-        TIM_ClearITPendingBit( TIM2, TIM_IT_Update );
-    }
-}
-
-void TIM4_IRQHandler( void )
-{
-
-    if( TIM_GetITStatus( TIM4, TIM_IT_Update ) != RESET )
-    {
-    	 ProcessY_IRQ();
-        /* Clear interrupt flag */
-        TIM_ClearITPendingBit( TIM4, TIM_IT_Update );
-    }
-}
 

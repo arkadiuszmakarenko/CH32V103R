@@ -1,11 +1,14 @@
 eclipse.preferences.version=1
 encoding//Core/core_riscv.h=GBK
 encoding//Ld/Link.ld=GBK
+encoding//Peripheral/inc/ch32v10x.h=GBK
 encoding//Peripheral/inc/ch32v10x_gpio.h=GBK
 encoding//Peripheral/inc/ch32v10x_misc.h=GBK
+encoding//Peripheral/inc/ch32v10x_rcc.h=GBK
 encoding//Peripheral/inc/ch32v10x_tim.h=GBK
 encoding//Peripheral/src/ch32v10x_gpio.c=GBK
 encoding//Peripheral/src/ch32v10x_misc.c=GBK
+encoding//Peripheral/src/ch32v10x_rcc.c=GBK
 encoding//Peripheral/src/ch32v10x_tim.c=GBK
 encoding//Startup/startup_ch32v10x.S=GBK
 encoding//User/USB_Host/app_km.c=GBK

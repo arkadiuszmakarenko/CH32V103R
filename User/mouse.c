@@ -273,9 +273,9 @@ void ProcessY_IRQ() {
 
 // Set the timer top value for the next interrupt
 	if (yTimerTop == 0) {
-		TIM3->ATRLR = 1;
+		TIM4->ATRLR = 1;
 	} else {
-		TIM3->ATRLR = yTimerTop;
+		TIM4->ATRLR = yTimerTop;
 	}
 
 }

@@ -14,7 +14,6 @@
 /*******************************************************************************/
 /* Header File */
 #include "usb_host_config.h"
-#include "gpio.h"
 
 /*******************************************************************************/
 /* Variable Definition */
@@ -379,7 +378,7 @@ uint8_t KM_AnalyzeConfigDesc( uint8_t index, uint8_t ep0_size )
                             /* Analyze each endpoint of the current interface */
                             if( Com_Buf[ i + 1 ] == DEF_DECR_ENDPOINT )
                             {
-                                /* Save endpoint related information (endpoint address, attribute, max packet , polling interval) */
+                                /* Save endpoint related information (endpoint address, attribute, max packet size, polling interval) */
                                 if( ( (PUSB_ENDP_DESCR)( &Com_Buf[ i ] ) )->bEndpointAddress & 0x80 )
                                 {
                                     /* IN */
@@ -1497,14 +1496,12 @@ void USBH_MainDeal( void )
                     
                     /* Set the connection status of the device  */
                     RootHubDev.bStatus = ROOT_DEV_SUCCESS;
-                    GPIO_WriteBit(LED_GPIO_Port, LED_Pin, Bit_RESET);
                 }
                 else if( s != ERR_USB_DISCON )
                 {
                     DUG_PRINTF( "Err(%02x)\r\n", s );
                     
                     RootHubDev.bStatus = ROOT_DEV_FAILED;
-                    GPIO_WriteBit(LED_GPIO_Port, LED_Pin, Bit_SET);
                 }
             }
             else if( RootHubDev.bType == USB_DEV_CLASS_HUB )
@@ -1519,7 +1516,6 @@ void USBH_MainDeal( void )
 
                     /* Set the connection status of the device  */
                     RootHubDev.bStatus = ROOT_DEV_SUCCESS;
-                    GPIO_WriteBit(LED_GPIO_Port, LED_Pin, Bit_RESET);
                 }
                 else if( s != ERR_USB_DISCON )
                 {
@@ -1549,7 +1545,6 @@ void USBH_MainDeal( void )
                 DUG_PRINTF( "End Enum.\r\n" );
                 
                 RootHubDev.bStatus = ROOT_DEV_SUCCESS;
-                GPIO_WriteBit(LED_GPIO_Port, LED_Pin, Bit_RESET);
             }
         }
         else if( s != ERR_USB_DISCON )
@@ -1558,7 +1553,6 @@ void USBH_MainDeal( void )
             DUG_PRINTF( "Enum Fail with Error Code:%x\r\n",s );
             
             RootHubDev.bStatus = ROOT_DEV_FAILED;
-            GPIO_WriteBit(LED_GPIO_Port, LED_Pin, Bit_SET);
         }
     }
     else if( s == ROOT_DEV_DISCONNECT )
@@ -1569,7 +1563,6 @@ void USBH_MainDeal( void )
         index = RootHubDev.DeviceIndex;
         memset( &RootHubDev.bStatus, 0, sizeof( ROOT_HUB_DEVICE ) );
         memset( &HostCtl[ index ].InterfaceNum, 0, sizeof( HOST_CTL ) );
-        GPIO_WriteBit(LED_GPIO_Port, LED_Pin, Bit_SET);
     }
 
     /* Get the data of the HID device connected to the USB host port */
@@ -1597,7 +1590,25 @@ void USBH_MainDeal( void )
                         	//Add value to circular
                         	HostCtl[ index ].Interface[ intf_num ].HidRptLen = len;
                         	FifoWrite(&HostCtl[ index ].Interface[ intf_num ].buffer, &Com_Buf, len);
-                            
+
+#if DEF_DEBUG_PRINTF
+                        	DUG_PRINTF("Index:%x \r\n",index );
+                        	DUG_PRINTF("Buffer head%x \r\n", HostCtl[ index ].Interface[ intf_num ].buffer.head);
+                        	DUG_PRINTF("Buffer tail%x \r\n", HostCtl[ index ].Interface[ intf_num ].buffer.tail);
+
+                        	DUG_PRINTF("Interface type:%x \r\n", HostCtl[ index ].Interface[ intf_num ].HIDRptDesc.type);
+
+                        	DUG_PRINTF("Len:%x \r\n", len);
+
+
+                            for( i = 0; i < len; i++ )
+                            {
+
+                                DUG_PRINTF( "%02x ", Com_Buf[ i ] );
+                            }
+                            DUG_PRINTF( "\r\n" );
+#endif
+
                             /* Handle keyboard lighting */
                             if( HostCtl[ index ].Interface[ intf_num ].Type == DEC_KEY )
                             {
@@ -1811,6 +1822,21 @@ void USBH_MainDeal( void )
                                     	HostCtl[ index ].Interface[ intf_num ].HidRptLen = len;
                                     	FifoWrite(&HostCtl[ index ].Interface[ intf_num ].buffer, &Com_Buf, len);
 
+#if DEF_DEBUG_PRINTF
+                                    	DUG_PRINTF("Index:%x \r\n",index );
+                                    	DUG_PRINTF("Buffer head%x \r\n", HostCtl[ index ].Interface[ intf_num ].buffer.head);
+                                    	DUG_PRINTF("Buffer tail%x \r\n", HostCtl[ index ].Interface[ intf_num ].buffer.tail);
+
+                                    	DUG_PRINTF("Interface type:%x \r\n", HostCtl[ index ].Interface[ intf_num ].HIDRptDesc.type);
+
+                                    	DUG_PRINTF("Len:%x \r\n", len);
+
+                                        for( i = 0; i < len; i++ )
+                                        {
+                                            DUG_PRINTF( "%02x ", Com_Buf[ i ] );
+                                        }
+                                        DUG_PRINTF( "\r\n" );
+#endif
 
                                         if( HostCtl[ index ].Interface[ intf_num ].Type == DEC_KEY )
                                         {
