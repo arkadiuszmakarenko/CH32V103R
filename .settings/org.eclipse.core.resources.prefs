@@ -21,6 +21,7 @@ encoding//User/USB_Host/usb_keyboard.c=GBK
 encoding//User/USB_Host/usb_keyboard.h=GBK
 encoding//User/USB_Host/usb_mouse.c=GBK
 encoding//User/USB_Host/usb_mouse.h=GBK
+encoding//User/ch32v10x_conf.h=GBK
 encoding//User/gamepad.c=GBK
 encoding//User/gamepad.h=GBK
 encoding//User/gpio.c=GBK
