@@ -266,6 +266,7 @@
 		<configuration configurationName="obj">
 			<resource resourceType="PROJECT" workspacePath="/CH32V103R8T6"/>
 		</configuration>
+		<configuration configurationName="Release"/>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 </cproject>

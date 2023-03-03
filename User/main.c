@@ -122,16 +122,18 @@ int main(void) {
 
 		if (RootHubDev.bType == USB_DEV_CLASS_HUB) {
 
-			for (uint8_t device = 0; device < DEF_NEXT_HUB_PORT_NUM_MAX;
-					device++) {
-
+			//Iterate over all devices
+			for (uint8_t device = 1; device < 5; device++)
+			{
+				//Iterate over all interfaces
 				for (int itf = 0; itf < DEF_INTERFACE_NUM_MAX; itf++) {
 					//Handle mouse
 					if (HostCtl[device].Interface[itf].HIDRptDesc.type
 							== REPORT_TYPE_MOUSE) {
 						HID_MOUSE_Info_TypeDef *mousemap = USBH_GetMouseInfo(
-								&HostCtl[0].Interface[itf]);
-						ProcessMouse(mousemap);
+								&HostCtl[device].Interface[itf]);
+							ProcessMouse(mousemap);
+
 					}
 
 					//Handle gamepad
@@ -139,18 +141,16 @@ int main(void) {
 							== REPORT_TYPE_JOYSTICK) {
 
 			HID_gamepad_Info_TypeDef *gamepad = GetGamepadInfo(
-								&HostCtl[0].Interface[itf]);
+								&HostCtl[device].Interface[itf]);
 							ProcessGamepad(gamepad);
 					}
 
 					// Handle Keyboard
 					if (HostCtl[device].Interface[itf].HIDRptDesc.type
 							== REPORT_TYPE_KEYBOARD) {
-						//HID_KEYBD_Info_TypeDef *USBH_HID_GetKeybdInfo(Interface *Itf)
 						HID_KEYBD_Info_TypeDef *kbd = USBH_HID_GetKeybdInfo(
-								&HostCtl[0].Interface[itf]);
-
-						amikb_process(kbd);
+								&HostCtl[device].Interface[itf]);
+							amikb_process(kbd);
 
 					}
 

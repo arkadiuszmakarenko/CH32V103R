@@ -13,6 +13,7 @@ encoding//Peripheral/src/ch32v10x_tim.c=GBK
 encoding//Startup/startup_ch32v10x.S=GBK
 encoding//User/USB_Host/app_km.c=GBK
 encoding//User/USB_Host/ch32v10x_usbhd_host.c=GBK
+encoding//User/USB_Host/ch32v10x_usbhd_host.h=GBK
 encoding//User/USB_Host/usb_gamepad.c=GBK
 encoding//User/USB_Host/usb_gamepad.h=GBK
 encoding//User/USB_Host/usb_hid_reportparser.h=GBK
