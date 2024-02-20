@@ -240,14 +240,12 @@ void ProcessY_IRQ() {
 		if (mouseEncoderPhaseY == 3)
 		{
 			GPIO_WriteBit(FV_GPIO_Port, LVQ_Pin, !(0));	// Set Y1 to 0
-		GPIO_WriteBit(LED_GPIO_Port, LED_Pin, Bit_RESET);
 		}
 		if (mouseEncoderPhaseY == 2)
 			GPIO_WriteBit(LVQ_GPIO_Port, FV_Pin, !(0));	// Set Y2 to 0
 		if (mouseEncoderPhaseY == 1)
 		{
 			GPIO_WriteBit(FV_GPIO_Port, LVQ_Pin, !(1));	// Set Y1 to 1
-			GPIO_WriteBit(LED_GPIO_Port, LED_Pin, Bit_SET);
 		}
 			if (mouseEncoderPhaseY == 0)
 			GPIO_WriteBit(LVQ_GPIO_Port, FV_Pin, !(1));	// Set Y2 to 1
