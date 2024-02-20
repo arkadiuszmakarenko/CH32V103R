@@ -1,4 +1,5 @@
 eclipse.preferences.version=1
+encoding//.git/hooks/commit-msg.sample=GBK
 encoding//Core/core_riscv.h=GBK
 encoding//Debug/debug.c=GBK
 encoding//Ld/Link.ld=GBK
