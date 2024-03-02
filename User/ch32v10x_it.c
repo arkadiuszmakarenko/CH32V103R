@@ -8,9 +8,12 @@
  * SPDX-License-Identifier: Apache-2.0
  *******************************************************************************/
 #include "ch32v10x_it.h"
+#include "mouse.h"
+
 
 void NMI_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void HardFault_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
+void EXTI3_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 
 /*********************************************************************
  * @fn      NMI_Handler
@@ -34,5 +37,14 @@ void HardFault_Handler(void)
 {
     while(1)
     {
+    }
+}
+
+void EXTI3_IRQHandler(void)
+{
+    if(EXTI_GetITStatus(EXTI_Line3) != RESET)
+    {
+        ProcessScrollIRQ();
+        EXTI_ClearITPendingBit(EXTI_Line3); /* Clear Flag */
     }
 }

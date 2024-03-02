@@ -43,127 +43,115 @@
  *
  * @return  none
  */
-
 int main(void) {
 	/* Initialize system configuration */
-	Delay_Init();
-#if DEF_DEBUG_PRINTF
-	USART_Printf_Init(115200);
-	DUG_PRINTF("SystemClk:%d\r\n", SystemCoreClock);
-	DUG_PRINTF("USBHD HOST KM Test\r\n");
-#endif
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
+    SystemCoreClockUpdate();
+    /* Initialize timer for obtaining keyboard and mouse data at regular intervals */
+    TIM3_Init(9, SystemCoreClock / 10000 - 1);
 
-	/* Initialize timer for obtaining keyboard and mouse data at regular intervals */
-	TIM3_Init(9, SystemCoreClock / 10000 - 1);
-	DUG_PRINTF("TIM3 Init OK!\r\n");
-
-	/* Configure USB clock and initialize USB host */
+    /* Configure USB clock and initialize USB host */
 #if DEF_USBHD_PORT_EN
-	USBHD_RCC_Init();
-	USBHD_Host_Init(ENABLE);
-	memset(&RootHubDev.bStatus, 0, sizeof(ROOT_HUB_DEVICE));
-	memset(
-			&HostCtl[ DEF_USBHD_PORT_INDEX * DEF_ONE_USB_SUP_DEV_TOTAL].InterfaceNum,
-			0, DEF_ONE_USB_SUP_DEV_TOTAL * sizeof(HOST_CTL));
+    USBHD_RCC_Init();
+    USBHD_Host_Init(ENABLE);
+    memset(&RootHubDev.bStatus, 0, sizeof(ROOT_HUB_DEVICE));
+    memset(
+            &HostCtl[ DEF_USBHD_PORT_INDEX * DEF_ONE_USB_SUP_DEV_TOTAL].InterfaceNum,
+            0, DEF_ONE_USB_SUP_DEV_TOTAL * sizeof(HOST_CTL));
 #endif
 
-	TIM2_Init();
-	Delay_Init();
-#if DEF_DEBUG_PRINTF
-	DUG_PRINTF("TIM2 Init OK!\r\n");
-#endif
-	TIM4_Init();
-	DUG_PRINTF("TIM4 Init OK!\r\n");
-	Delay_Init();
-#if DEF_DEBUG_PRINTF
+    TIM2_Init();
+    TIM4_Init();
+    Delay_Init();
+    GPIO_Config();
+    InitMouse();
 
-#endif
-	GPIO_Config();
 
-	while (1) {
-		USBH_MainDeal();
+    while (1) {
+            USBH_MainDeal();
 
-		//Handle HID Device
-		if (RootHubDev.bType == USB_DEV_CLASS_HID) {
+            //Handle HID Device
+            if (RootHubDev.bType == USB_DEV_CLASS_HID) {
 
-			for (int itf = 0; itf < DEF_INTERFACE_NUM_MAX; itf++) {
-				//Handle mouse
-				if (HostCtl[0].Interface[itf].HIDRptDesc.type
-						== REPORT_TYPE_MOUSE) {
-					HID_MOUSE_Info_TypeDef *mousemap = USBH_GetMouseInfo(
-							&HostCtl[0].Interface[itf]);
-					ProcessMouse(mousemap);
-				}
+                for (int itf = 0; itf < DEF_INTERFACE_NUM_MAX; itf++) {
+                    //Handle mouse
+                    if (HostCtl[0].Interface[itf].HIDRptDesc.type
+                            == REPORT_TYPE_MOUSE) {
+                        HID_MOUSE_Info_TypeDef *mousemap = USBH_GetMouseInfo(
+                                &HostCtl[0].Interface[itf]);
+                        ProcessMouse(mousemap);
+                    }
 
-				//Handle gamepad
-				if (HostCtl[0].Interface[itf].HIDRptDesc.type
-						== REPORT_TYPE_JOYSTICK) {
+                    //Handle gamepad
+                    if (HostCtl[0].Interface[itf].HIDRptDesc.type
+                            == REPORT_TYPE_JOYSTICK) {
 
-		HID_gamepad_Info_TypeDef *gamepad = GetGamepadInfo(
-							&HostCtl[0].Interface[itf]);
-						ProcessGamepad(gamepad);
-				}
+            HID_gamepad_Info_TypeDef *gamepad = GetGamepadInfo(
+                                &HostCtl[0].Interface[itf]);
+                            ProcessGamepad(gamepad);
+                    }
 
-				// Handle Keyboard
-				if (HostCtl[0].Interface[itf].HIDRptDesc.type
-						== REPORT_TYPE_KEYBOARD) {
-					//HID_KEYBD_Info_TypeDef *USBH_HID_GetKeybdInfo(Interface *Itf)
-					HID_KEYBD_Info_TypeDef *kbd = USBH_HID_GetKeybdInfo(
-							&HostCtl[0].Interface[itf]);
+                    // Handle Keyboard
+                    if (HostCtl[0].Interface[itf].HIDRptDesc.type
+                            == REPORT_TYPE_KEYBOARD) {
+                        //HID_KEYBD_Info_TypeDef *USBH_HID_GetKeybdInfo(Interface *Itf)
+                        HID_KEYBD_Info_TypeDef *kbd = USBH_HID_GetKeybdInfo(
+                                &HostCtl[0].Interface[itf]);
 
-					amikb_process(kbd);
+                        amikb_process(kbd);
 
-				}
+                    }
 
-			}
-		}
+                }
+            }
 
-		//Handle HUB Device
+            //Handle HUB Device
 
-		if (RootHubDev.bType == USB_DEV_CLASS_HUB) {
+            if (RootHubDev.bType == USB_DEV_CLASS_HUB) {
 
-			//Iterate over all devices
-			for (uint8_t device = 1; device < 5; device++)
-			{
-				//Iterate over all interfaces
-				for (int itf = 0; itf < DEF_INTERFACE_NUM_MAX; itf++) {
-					//Handle mouse
-					if (HostCtl[device].Interface[itf].HIDRptDesc.type
-							== REPORT_TYPE_MOUSE) {
-						HID_MOUSE_Info_TypeDef *mousemap = USBH_GetMouseInfo(
-								&HostCtl[device].Interface[itf]);
-							ProcessMouse(mousemap);
+                //Iterate over all devices
+                for (uint8_t device = 1; device < 5; device++)
+                {
+                    //Iterate over all interfaces
+                    for (int itf = 0; itf < DEF_INTERFACE_NUM_MAX; itf++) {
+                        //Handle mouse
+                        if (HostCtl[device].Interface[itf].HIDRptDesc.type
+                                == REPORT_TYPE_MOUSE) {
+                            HID_MOUSE_Info_TypeDef *mousemap = USBH_GetMouseInfo(
+                                    &HostCtl[device].Interface[itf]);
+                                ProcessMouse(mousemap);
 
-					}
+                        }
 
-					//Handle gamepad
-					if (HostCtl[device].Interface[itf].HIDRptDesc.type
-							== REPORT_TYPE_JOYSTICK) {
+                        //Handle gamepad
+                        if (HostCtl[device].Interface[itf].HIDRptDesc.type
+                                == REPORT_TYPE_JOYSTICK) {
 
-			HID_gamepad_Info_TypeDef *gamepad = GetGamepadInfo(
-								&HostCtl[device].Interface[itf]);
-							ProcessGamepad(gamepad);
-					}
+                HID_gamepad_Info_TypeDef *gamepad = GetGamepadInfo(
+                                    &HostCtl[device].Interface[itf]);
+                                ProcessGamepad(gamepad);
+                        }
 
-					// Handle Keyboard
-					if (HostCtl[device].Interface[itf].HIDRptDesc.type
-							== REPORT_TYPE_KEYBOARD) {
-						HID_KEYBD_Info_TypeDef *kbd = USBH_HID_GetKeybdInfo(
-								&HostCtl[device].Interface[itf]);
-							amikb_process(kbd);
+                        // Handle Keyboard
+                        if (HostCtl[device].Interface[itf].HIDRptDesc.type
+                                == REPORT_TYPE_KEYBOARD) {
+                            HID_KEYBD_Info_TypeDef *kbd = USBH_HID_GetKeybdInfo(
+                                    &HostCtl[device].Interface[itf]);
+                                amikb_process(kbd);
 
-					}
+                        }
 
-				}
-			}
+                    }
+                }
 
 
 
-			}
+                }
 
-		}
+            }
 
-	}
+        }
+
 
 
 

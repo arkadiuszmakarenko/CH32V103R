@@ -9,8 +9,8 @@
 #define RB_Pin GPIO_Pin_14
 #define RB_GPIO_Port GPIOB
 
-#define MB_Pin GPIO_Pin_3
-#define MB_GPIO_Port GPIOB
+//#define MB_Pin GPIO_Pin_3
+//#define MB_GPIO_Port GPIOB
 
 #define LB_Pin GPIO_Pin_15
 #define LB_GPIO_Port GPIOB

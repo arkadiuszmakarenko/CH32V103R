@@ -55,8 +55,8 @@ void TIM3_Init( uint16_t arr, uint16_t psc )
     TIM_ITConfig( TIM3, TIM_IT_Update, ENABLE );
 
     NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQn;
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
-    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init( &NVIC_InitStructure );
 
@@ -70,7 +70,7 @@ void TIM3_Init( uint16_t arr, uint16_t psc )
 /*********************************************************************
  * @fn      TIM3_IRQHandler
  *
- * @brief   This function handles TIM3 global interrupt request.
+ * @brief   This function handles TIM3 global interruzApt request.
  *
  * @return  none
  */
