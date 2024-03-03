@@ -5,6 +5,27 @@ void TIM2_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void TIM4_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 
 
+
+void TIM1_Init( void )
+{
+
+
+
+    /* Enable Timer2 Clock */
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1, ENABLE);
+    TIM_SetAutoreload(TIM1, 0x3EB);
+    TIM_CounterModeConfig(TIM1, TIM_CounterMode_Up);
+    TIM_PrescalerConfig(TIM1, 72 - 1, TIM_PSCReloadMode_Immediate);
+
+    TIM_Cmd( TIM1, ENABLE );
+
+
+
+
+}
+
+
+
 void TIM2_Init( void )
 {
 
@@ -12,7 +33,7 @@ void TIM2_Init( void )
     TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure = { 0 };
     NVIC_InitTypeDef NVIC_InitStructure = { 0 };
 
-    /* Enable Timer3 Clock */
+    /* Enable Timer2 Clock */
     RCC_APB1PeriphClockCmd( RCC_APB1Periph_TIM2, ENABLE );
 
     /* Initialize Timer2 */

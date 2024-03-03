@@ -12,6 +12,9 @@ volatile int16_t mouseDistanceY = 0;		// Distance left for mouse to move
 volatile uint8_t xTimerTop = 1;				// X axis timer TOP value
 volatile uint8_t yTimerTop = 1;				// Y axis timer TOP value
 FIFO_Utils_TypeDef ScrollBuffer;
+uint8_t code = 0;
+volatile uint8_t AmigaACK = 0;
+volatile uint8_t previousMMB = 0;
 
 
 
@@ -181,15 +184,17 @@ void ProcessMouse(HID_MOUSE_Info_TypeDef *mousemap) {
 
 		uint8_t writeBuff = 0;
 		uint8_t  numberTics = abs(mousemap->wheel);
-	//	if (mousemap->buttons[2] == 1)
-	//	{
-	//	    writeBuff = CODE_MMB_UP;
-	//	    FifoWrite(&ScrollBuffer,&writeBuff , 1);
-	//	}
-	//	else {
-    //       writeBuff = CODE_MMB_DOWN;
-    //        FifoWrite(&ScrollBuffer,&writeBuff , 1);
-	//   }
+		if (mousemap->buttons[2] == 1)
+		{
+		    writeBuff = CODE_MMB_UP;
+		    FifoWrite(&ScrollBuffer,&writeBuff , 1);
+		    previousMMB = 1;
+		}
+		if (previousMMB == 1 &&mousemap->buttons[2] == 0) {
+            writeBuff = CODE_MMB_DOWN;
+            FifoWrite(&ScrollBuffer,&writeBuff , 1);
+            previousMMB = 0;
+	   }
 
 
 		if (mousemap->wheel !=0)
@@ -309,32 +314,80 @@ void ProcessY_IRQ() {
 
 void ProcessScrollIRQ()
 {
-    uint8_t code = 0;
+    TIM_SetCounter(TIM1, 0);
     uint16_t PortCurrentValue = GPIO_ReadOutputData(GPIOB);
 
-    FifoRead(&ScrollBuffer, &code, 1);
+   // if (AmigaACK == 1)
+   // {
+        FifoRead(&ScrollBuffer, &code, 1);
+        //if (code == 0) return;
+    //}
 
-     if (code == 0) return;
+    // /----- QYB
+    // |/---- QYA
+    // ||/--- QXB
+    // |||/-- QXA
 
-    GPIO_WriteBit(RB_GPIO_Port, RB_Pin, 0);
+    uint8_t QYB = GPIO_ReadOutputDataBit(GPIOB, LVQ_Pin);
+    uint8_t QYA = GPIO_ReadOutputDataBit(GPIOB, FV_Pin);
+    uint8_t QXB = GPIO_ReadOutputDataBit(GPIOB, RHQ_Pin);
+    uint8_t QXA = GPIO_ReadOutputDataBit(GPIOB, BH_Pin);
+
+
+
+    if (code==0)
+    {
+        GPIO_WriteBit(GPIOB, LVQ_Pin,!QYB);
+        GPIO_WriteBit(GPIOB, FV_Pin,!QYA);
+        GPIO_WriteBit(GPIOB, RHQ_Pin,!QXB);
+        GPIO_WriteBit(GPIOB, BH_Pin,!QXA);
+    }
+
 
     if (code == CODE_WHEEL_UP)
     {
-        GPIO_WriteBit(RHQ_GPIO_Port, RHQ_Pin, 0);
-        GPIO_WriteBit(LVQ_GPIO_Port, LVQ_Pin,0);
-        GPIO_WriteBit(BH_GPIO_Port, BH_Pin,1);
-        GPIO_WriteBit(FV_GPIO_Port,FV_Pin, 1);
+        GPIO_WriteBit(GPIOB, LVQ_Pin,!QYB);
+        GPIO_WriteBit(GPIOB, FV_Pin,QYA);
+        GPIO_WriteBit(GPIOB, RHQ_Pin,!QXB);
+        GPIO_WriteBit(GPIOB, BH_Pin,!QXA);
     }
 
     if (code == CODE_WHEEL_DOWN)
     {
-        GPIO_WriteBit(RHQ_GPIO_Port, RHQ_Pin, 1);
-        GPIO_WriteBit(LVQ_GPIO_Port, LVQ_Pin, 0);
-        GPIO_WriteBit(BH_GPIO_Port, BH_Pin,0);
-        GPIO_WriteBit(FV_GPIO_Port,FV_Pin, 1);
+        GPIO_WriteBit(GPIOB, LVQ_Pin,QYB);
+        GPIO_WriteBit(GPIOB, FV_Pin,!QYA);
+        GPIO_WriteBit(GPIOB, RHQ_Pin,!QXB);
+        GPIO_WriteBit(GPIOB, BH_Pin,!QXA);
     }
 
-   while (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_3) != 1);
+    if (code == CODE_MMB_UP)
+    {
+        GPIO_WriteBit(GPIOB, LVQ_Pin,!QYB);
+        GPIO_WriteBit(GPIOB, FV_Pin,!QYA);
+        GPIO_WriteBit(GPIOB, RHQ_Pin,!QXB);
+        GPIO_WriteBit(GPIOB, BH_Pin,QXA);
+    }
+
+    if (code == CODE_MMB_DOWN)
+    {
+        GPIO_WriteBit(GPIOB, LVQ_Pin,!QYB);
+        GPIO_WriteBit(GPIOB, FV_Pin,!QYA);
+        GPIO_WriteBit(GPIOB, RHQ_Pin,QXB);
+        GPIO_WriteBit(GPIOB, BH_Pin,!QXA);
+    }
+
+
+     QYB = GPIO_ReadOutputDataBit(GPIOB, LVQ_Pin);
+     QYA = GPIO_ReadOutputDataBit(GPIOB, FV_Pin);
+     QXB = GPIO_ReadOutputDataBit(GPIOB, RHQ_Pin);
+     QXA = GPIO_ReadOutputDataBit(GPIOB, BH_Pin);
+
+   //while (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_3) != 1 || TIM_GetCounter(TIM1) > 20);
+   //while ( TIM_GetCounter(TIM1) > 0);
    GPIO_Write(GPIOB,PortCurrentValue);
+   code = 0;
+
+   //check time, if short repeate code
+ //  if(TIM_GetCounter(TIM1)<50) AmigaACK = 0; else AmigaACK = 1;
 
 }

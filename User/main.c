@@ -59,7 +59,7 @@ int main(void) {
             &HostCtl[ DEF_USBHD_PORT_INDEX * DEF_ONE_USB_SUP_DEV_TOTAL].InterfaceNum,
             0, DEF_ONE_USB_SUP_DEV_TOTAL * sizeof(HOST_CTL));
 #endif
-
+    TIM1_Init();
     TIM2_Init();
     TIM4_Init();
     Delay_Init();

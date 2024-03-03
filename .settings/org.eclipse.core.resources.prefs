@@ -45,7 +45,4 @@ encoding//User/tim.c=GBK
 encoding//User/tim.h=GBK
 encoding//User/utils.c=GBK
 encoding//User/utils.h=GBK
-encoding//obj/CH32V103R8T6.map=GBK
 encoding//obj/gamepad.h=GBK
-encoding//obj/objects.mk=GBK
-encoding//obj/sources.mk=GBK
